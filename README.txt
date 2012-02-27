@@ -4,6 +4,7 @@ http://drupal.org/project/block_class
 -----
 Block Class was developed and is maintained by Four Kitchens <http://fourkitchens.com>.
 
+PLEASE CHECK OUT A BRANCH TO USE THIS MODULE
 
 =====
 Installation
