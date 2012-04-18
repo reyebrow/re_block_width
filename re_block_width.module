@@ -16,7 +16,6 @@ function re_block_width_preprocess_block(&$vars) {
   if ( isset($classes['css_extra']) && $classes['css_extra'] != ""){
     $vars['classes_array'][] = check_plain($classes['css_extra']);
   }
-  kpr($vars['classes_array']);
 }
 
 
@@ -78,7 +77,6 @@ function re_block_width_form_submit($form, &$form_state) {
       $delta = $form_state['values']['delta'];
       $class = $form_state['values']['css_class'];
       $extra = $form_state['values']['css_extra'];
-      kpr(get_defined_vars());
       db_delete('block_width')->condition('module', $module)->condition('delta', $delta)->execute();
       if (!empty($class)) {
         $id = db_insert('block_width')->fields(array('module' => $module, 'delta' => $delta, 'css_class' => $class, 'css_extra' => $extra ))->execute();
