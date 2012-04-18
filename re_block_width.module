@@ -11,10 +11,12 @@ function re_block_width_preprocess_block(&$vars) {
   $region = $vars['elements']['#block']->region;
   $orientation = $region_orient[$region];
   if ($orientation == "h"){
-    $vars['classes_array'][] = "columns $classes";
+    $vars['classes_array'][] = "columns " . $classes['css_class'];
   }
-
-  
+  if ( isset($classes['css_extra']) && $classes['css_extra'] != ""){
+    $vars['classes_array'][] = check_plain($classes['css_extra']);
+  }
+  kpr($vars['classes_array']);
 }
 
 
@@ -22,8 +24,7 @@ function re_block_width_preprocess_block(&$vars) {
  * Return classes as string
  */
 function re_block_width($block) {
-  $ret = db_query('SELECT css_class FROM {block_width} WHERE module = :module AND delta = :delta', array(':module' => $block->module, ':delta' => $block->delta))->fetchField();
-  return $ret ? $ret : '';
+  return db_query('SELECT css_class, css_extra FROM {block_width} WHERE module = :module AND delta = :delta', array(':module' => $block->module, ':delta' => $block->delta))->fetchAssoc();
 }
 
 
@@ -34,7 +35,9 @@ function re_block_width_form_alter(&$form, &$form_state, $form_id) {
   if ($form_id == 'block_admin_configure' || $form_id == 'block_add_block_form') {
     $block->module = $form['module']['#value'];
     $block->delta = $form['delta']['#value'];
-    $css_class = re_block_width($block) ? re_block_width($block) : "";
+
+
+    $css_classes = re_block_width($block) ? re_block_width($block) : "";
     // Create a more technical description for users with administer blocks permission.
     $description = t('For blocks in horizontal regions we might want to give them a width. Widths based on a grid 12 units wide where \'Twelve\'=100%');
 
@@ -48,12 +51,18 @@ function re_block_width_form_alter(&$form, &$form_state, $form_id) {
     $form['re_block_width']['css_class'] = array(
       '#type' => 'select',
       '#title' => t('Width'),
-      '#default_value' => $css_class,
+      '#default_value' => $css_classes['css_class'],
       '#options' => Array('Choose One' => '', 'twelve'=>'twelve', 'eleven'=>'eleven', 'ten'=>'ten', 'nine'=>'nine', 'eight'=>'eight', 'seven'=>'seven', 'six'=>'six', 'five'=>'five', 'four'=>'four', 'three'=>'three', 'two'=>'two', 'one'=>'one'),
       '#description' => t('This is for horizontal regions only. For vertical regions most cases will require this to be \'twelve\''),
       '#maxlength' => 255,
     );
-	
+
+  $form['re_block_width']['css_extra'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $css_classes['css_extra'],
+    '#title' => t('Extra Custom Classes'),
+    '#maxlength' => 255,
+  );
     $form['#submit'][] = 're_block_width_form_submit';
   }
 }
@@ -68,9 +77,11 @@ function re_block_width_form_submit($form, &$form_state) {
       $module = $form_state['values']['module'];
       $delta = $form_state['values']['delta'];
       $class = $form_state['values']['css_class'];
+      $extra = $form_state['values']['css_extra'];
+      kpr(get_defined_vars());
       db_delete('block_width')->condition('module', $module)->condition('delta', $delta)->execute();
       if (!empty($class)) {
-        $id = db_insert('block_width')->fields(array('module' => $module, 'delta' => $delta, 'css_class' => $class))->execute();
+        $id = db_insert('block_width')->fields(array('module' => $module, 'delta' => $delta, 'css_class' => $class, 'css_extra' => $extra ))->execute();
       }
     }
   }
