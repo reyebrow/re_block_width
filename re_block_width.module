@@ -37,6 +37,7 @@ function re_block_width_form_alter(&$form, &$form_state, $form_id) {
 
 
     $css_classes = re_block_width($block) ? re_block_width($block) : "";
+    kpr($css_classes);
     // Create a more technical description for users with administer blocks permission.
     $description = t('For blocks in horizontal regions we might want to give them a width. Widths based on a grid 12 units wide where \'Twelve\'=100%');
 
@@ -50,7 +51,7 @@ function re_block_width_form_alter(&$form, &$form_state, $form_id) {
     $form['re_block_width']['css_class'] = array(
       '#type' => 'select',
       '#title' => t('Width'),
-      '#default_value' => $css_classes['css_class'],
+      '#default_value' => isset($css_classes['css_class']) ? $css_classes['css_class'] : "",
       '#options' => Array('Choose One' => '', 'twelve'=>'twelve', 'eleven'=>'eleven', 'ten'=>'ten', 'nine'=>'nine', 'eight'=>'eight', 'seven'=>'seven', 'six'=>'six', 'five'=>'five', 'four'=>'four', 'three'=>'three', 'two'=>'two', 'one'=>'one'),
       '#description' => t('This is for horizontal regions only. For vertical regions most cases will require this to be \'twelve\''),
       '#maxlength' => 255,
@@ -58,7 +59,7 @@ function re_block_width_form_alter(&$form, &$form_state, $form_id) {
 
   $form['re_block_width']['css_extra'] = array(
     '#type' => 'textfield',
-    '#default_value' => $css_classes['css_extra'],
+    '#default_value' => isset($css_classes['css_extra']) ? $css_classes['css_extra'] : "",
     '#title' => t('Extra Custom Classes'),
     '#maxlength' => 255,
   );
