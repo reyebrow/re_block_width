@@ -6,10 +6,10 @@
 function re_block_width_preprocess_block(&$vars) {
   $block = $vars['block'];
   $classes = re_block_width($block);
-  
   $region_orient = theme_get_setting('region');
   $region = $vars['elements']['#block']->region;
   $orientation = $region_orient[$region];
+  
   if ($orientation == "h"){
     $vars['classes_array'][] = "columns " . $classes['css_class'];
   }
@@ -37,7 +37,7 @@ function re_block_width_form_alter(&$form, &$form_state, $form_id) {
 
 
     $css_classes = re_block_width($block) ? re_block_width($block) : "";
-    kpr($css_classes);
+    //kpr($css_classes);
     // Create a more technical description for users with administer blocks permission.
     $description = t('For blocks in horizontal regions we might want to give them a width. Widths based on a grid 12 units wide where \'Twelve\'=100%');
 
